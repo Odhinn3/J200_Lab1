@@ -19,16 +19,20 @@ import repositories.ClientService;
 public class Parser {
     
     @EJB
-    ClientService service;
+    ClientService clientservice;
     @EJB
     AdressService adrservice;
     
     public void createXmlFile(List<Clients> clients){
-        new DOMParser(service, adrservice, getXmlFile()).createFile(clients);      
+        new DOMParsing(clientservice, adrservice, getXmlFile()).createFile(clients);      
     }
     
-    public void readDomXml(){
-        new DOMParser(service, adrservice, getXmlFile()).readXml();
+    public List<Clients> readDomXml(){
+        return new DOMParsing(clientservice, adrservice, getXmlFile()).readXml();
+    }
+    
+    public List<Clients> readSaxXml(){
+        return new SAXParsing(clientservice, adrservice, getXmlFile()).readXml();
     }
     
     private File getXmlFile(){

@@ -76,10 +76,6 @@ public class Create extends HttpServlet {
             out.println("</p>");
             out.println("<p>");
             out.println("</div>");
-//            out.println("<div>");
-//            out.println("<label for=\"date\">Дата регистрации: </label>");
-//            out.println("<input type=\"date\" id=\"date\" value=\"" + LocalDate.now() + "\" name=\"regdate\"/>");
-//            out.println("</p>");
             out.println("<p>");
             out.println("</p>");
             out.println("<input type=\"submit\" value=\"create\" formaction=\"create\" formmethod=\"POST\" />");

@@ -1,5 +1,6 @@
 package repositories;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -19,19 +20,16 @@ public class AdressRepositoryImpl implements AdressRepository {
 
     @Override
     public List<Adresses> findByClientId(Integer clientid) {
-        return em.find(Clients.class, clientid).getAdressesList();  
+        List<Adresses> adresslist = new ArrayList<>(em.find(Clients.class, clientid).getAdressesSet());
+        return adresslist;  
     }
     
     @Override
     public Adresses findAdressById(int adressid) {
-        Adresses adress = new Adresses();
-        System.out.println("new adress is created");
-        adress = em.find(Adresses.class, adressid);
+        Adresses adress = em.find(Adresses.class, adressid);
         if (adress!= null){
-            System.out.println("new adress is not null");
             return adress;
         } else {
-            System.out.println("new adress is null");
             return null;
         }
     }
@@ -55,6 +53,9 @@ public class AdressRepositoryImpl implements AdressRepository {
             adress = em.merge(adress);
         } em.remove(adress);
     }
-
     
+    @Override
+    public int getMaxId(){
+        return (Integer) em.createNativeQuery("select max(adressid) from j200.adresses;").getSingleResult();
+    }   
 }

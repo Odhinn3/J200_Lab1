@@ -12,6 +12,14 @@
         <servlet-name>ViewList</servlet-name>
         <servlet-class>servlets.ViewList</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CheckDOM</servlet-name>
+        <servlet-class>servlets.CheckDOM</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CheckSAX</servlet-name>
+        <servlet-class>servlets.CheckSAX</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Create</servlet-name>
         <url-pattern>/create</url-pattern>
@@ -23,6 +31,14 @@
     <servlet-mapping>
         <servlet-name>ViewList</servlet-name>
         <url-pattern>/viewlist</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CheckDOM</servlet-name>
+        <url-pattern>/checkdom</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CheckSAX</servlet-name>
+        <url-pattern>/checksax</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

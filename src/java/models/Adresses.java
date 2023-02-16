@@ -2,7 +2,6 @@ package models;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,6 +15,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -35,7 +35,7 @@ public class Adresses implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 //    @NotNull
     @Basic(optional = false)
     @Column(name = "adressid")
@@ -57,7 +57,7 @@ public class Adresses implements Serializable {
     @Column(name = "locationadress", length = 200)
     private String locationadress;
     @JoinColumn(name = "clientid", referencedColumnName = "clientid")
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Clients clientid;
 
     public Adresses() {
@@ -118,6 +118,7 @@ public class Adresses implements Serializable {
         this.locationadress = locationadress;
     }
 
+    @XmlTransient
     public Clients getClientid() {
         return clientid;
     }
@@ -148,6 +149,6 @@ public class Adresses implements Serializable {
 
     @Override
     public String toString() {
-        return "Adresses{" + "adressid=" + adressid + ", ip=" + ip + ", mac=" + mac + ", model=" + model + ", locationadress=" + locationadress + ", clientid=" + clientid + '}';
+        return "Adresses{" + "adressid=" + adressid + ", ip=" + ip + ", mac=" + mac + ", model=" + model + ", locationadress=" + locationadress + '}';
     } 
 }

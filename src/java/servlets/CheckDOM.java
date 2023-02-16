@@ -1,39 +1,31 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
 package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import models.Adresses;
 import models.Clients;
 import parsers.Parser;
-import repositories.ClientService;
-import repositories.AdressService;
 
 /**
  *
  * @author A.Konnov <github.com/Odhinn3>
  */
-@WebServlet(name = "ViewList", urlPatterns = {"/viewlist"})
-public class ViewList extends HttpServlet {
+public class CheckDOM extends HttpServlet {
     
     @EJB
-    ClientService clientService;
-    
-    @EJB
-    AdressService adressService;
-    
-    @EJB
-    Parser parser;
+    private Parser parser;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,34 +36,27 @@ public class ViewList extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
-        List<Clients> clients = clientService.findAllClients();
-        parser.createXmlFile(clients);
-//        parser.readSaxXml();
         String text = request.getParameter("search");
-        clients = filterList(clientService.findAllClients(), text);
+        List<Clients> clients = filterList(parser.readDomXml(), text);
         try (PrintWriter out = response.getWriter()) {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Clients table</title> <meta charset=\"UTF-8\">");
+            out.println("<title>Clients table from XML by DOM</title> <meta charset=\"UTF-8\">");
 //            out.println("<link href=\"URL_адрес_CSS_файла\" rel=\"stylesheet\" type=\"text/css\">");
             out.println("</head>");
             out.println("<body>");
-            out.println("<form action=\"viewlist\" method=\"GET\">");
+            out.println("<form action=\"checkdom\" method=\"GET\">");
             out.println("<input type=\"text\" name=\"search\" value=\"" + text + "\" />");
             out.println("<input type=\"submit\" value=\"Search\" /><br><br>");
             out.println("</form>");
-            out.println("<form action=\"\" method=\"POST\">");
-            out.println("<input type=\"submit\" value=\"Create new client\" />");
-            out.println("</form>");
             out.println("<div>");
             out.println("<table border=\"2\">");
-            out.println("<caption><b>Clients</b></caption>");   
+            out.println("<caption><b>CheckDOM Clients</b></caption>");   
             out.println("<thead>");
             out.println("<tr>");
             out.println("<th colspan=\"7\" >Clients</th>");
@@ -105,9 +90,9 @@ public class ViewList extends HttpServlet {
                         rowspan = 1;
                     }
                     out.println("<tr>");
-                    out.println("<td rowspan=" + rowspan + ">" +  "<a href=\"http://localhost:8080/J200_Lab1/createadress?id=" + id + "\">Create adress</a>" + "</td>");
-                    out.println("<td rowspan=" + rowspan + ">" +  "<a href=\"http://localhost:8080/J200_Lab1/update?id=" + id + "\">Update</a>" + "</td>");
-                    out.println("<td rowspan=" + rowspan + ">" +  "<a href=\"http://localhost:8080/J200_Lab1/delete?id=" + id + "\">Delete</a>" + "</td>");
+                    out.println("<td rowspan=" + rowspan + ">" +  "-" + "</td>");
+                    out.println("<td rowspan=" + rowspan + ">" +  "-" + "</td>");
+                    out.println("<td rowspan=" + rowspan + ">" +  "-" + "</td>");
                     out.println("<td rowspan=" + rowspan + ">" + id + "</td>");
                     out.println("<td rowspan=" + rowspan + ">" + client.getClientname() + "</td>");
                     out.println("<td rowspan=" + rowspan + ">" + client.getClienttype() + "</td>");
@@ -120,8 +105,8 @@ public class ViewList extends HttpServlet {
                             out.println("<td>" + adress.getMac() + "</td>");
                             out.println("<td>" + adress.getModel() + "</td>");
                             out.println("<td>" + adress.getLocationadress() + "</td>");
-                            out.println("<td>" + "<a href=\"http://localhost:8080/J200_Lab1/updateadress?id=" + adressid + "\">Update adress</a>" + "</td>");
-                            out.println("<td>" + "<a href=\"http://localhost:8080/J200_Lab1/deleteadress?id=" + adressid + "\">Delete adress</a>" + "</td>");
+                            out.println("<td>" + "-" + "</td>");
+                            out.println("<td>" + "-" + "</td>");
                             out.println("</tr>");
                         } 
                     } else {
@@ -138,12 +123,19 @@ public class ViewList extends HttpServlet {
             out.println("</html>");
         }
     }
-    
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        request.setCharacterEncoding("UTF-8");
-//        response.setContentType("text/html;charset=UTF-8");
         processRequest(request, response);
     }
 
@@ -158,8 +150,18 @@ public class ViewList extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.sendRedirect("http://localhost:8080/J200_Lab1/create");
+        processRequest(request, response);
     }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
     
     private List<Clients> filterList(List<Clients> clients, String text){
         if(clients==null||clients.isEmpty()||text==null||text.isEmpty()){
@@ -172,4 +174,5 @@ public class ViewList extends HttpServlet {
             ).collect(Collectors.toList());
         return clients;     
     }
+
 }

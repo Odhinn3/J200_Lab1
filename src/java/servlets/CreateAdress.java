@@ -3,7 +3,6 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Objects;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -126,8 +125,9 @@ public class CreateAdress extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
         String idStr = request.getParameter("id");
-        System.out.println(idStr);
-        int clientid = Integer.valueOf(idStr);
+        int clientid = Integer.parseInt(idStr);
+        Clients client = clientService.findById(clientid);
+        int adressid = adressService.getMaxId()+1;
         String ip = request.getParameter("ip1")
                 + "." + request.getParameter("ip2")
                 + "." + request.getParameter("ip3")
@@ -147,11 +147,11 @@ public class CreateAdress extends HttpServlet {
             request.setAttribute("message", message);
             request.getRequestDispatcher("/error").forward(request, response);
         } else {
-            Adresses adress = new Adresses(ip, mac, model, locationadress);
-            adress.setClientid(clientService.findById(clientid));
-            adressService.saveAdress(adress);
-//            clientService.findById(clientid).getAdressesList().add(adressService.saveAdress(adress));
+            Adresses adress = new Adresses(adressid, ip, mac, model, locationadress);
+            adress.setClientid(client);
+            client.getAdressesSet().add(adress);
             clientService.updateClient(clientService.findById(clientid));
+            adressService.saveAdress(adress); 
             response.sendRedirect("http://localhost:8080/J200_Lab1/viewlist");
         }  
     }

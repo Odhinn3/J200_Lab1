@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.xml.parsers.*;
 import models.Clients;
 import org.w3c.dom.Document;
@@ -28,14 +30,14 @@ import repositories.AdressService;
  *
  * @author A.Konnov <github.com/Odhinn3>
  */
-public class DOMParser {
+public class DOMParsing {
     
-    private final File file;
-    private final ClientService service;
-    private final AdressService adrservice;
+    private File file;
+    private ClientService service;
+    private AdressService adrservice;
 
 
-    public DOMParser(ClientService service, AdressService adrservice, File file) {
+    public DOMParsing(ClientService service, AdressService adrservice, File file) {
         this.service = service;
         this.adrservice = adrservice;
         this.file = file;       
@@ -57,7 +59,7 @@ public class DOMParser {
                 clientElement.setAttribute("clienttype", client.getClienttype());
                 String date = Long.toString(client.getRegdate().getTime());
                 clientElement.setAttribute("regdate", date);
-                List<Adresses> list = client.getAdressesList();
+                Set<Adresses> list = client.getAdressesSet();
                 if(!list.isEmpty()){
                     list.forEach(adress ->{
                         Element adressElement = document.createElement("adress");
@@ -79,9 +81,7 @@ public class DOMParser {
             StreamResult result = new StreamResult(file);
             
             transformer.transform(dOMSource, result);   
-        } catch (ParserConfigurationException ex) {
-            ex.printStackTrace();
-        } catch (TransformerException ex) {
+        } catch (ParserConfigurationException | TransformerException ex) {
             ex.printStackTrace();
         }
     }
@@ -103,53 +103,53 @@ public class DOMParser {
                     if(client==null){
                         client = new Clients();
                         client.setClientid(clientid);
-                        System.out.println("new client id = " + clientid);
-                    }
-                    client.setClientname(clientmap.getNamedItem("clientname").getNodeValue());
-                    client.setClienttype(clientmap.getNamedItem("clienttype").getNodeValue());
-                    long l = Long.parseLong(clientmap.getNamedItem("regdate").getNodeValue());
-                    Date date = new Date(l);
-                    client.setRegdate(date);
-                    System.out.println("new client from xml: " + clientid + ", " + client.getClientname());
-                    List<Adresses> adresses = new ArrayList<>();
-                    if(clientnode.hasChildNodes()){
-                        NodeList adrnodelist = document.getElementsByTagName("adress");
-                        for(int j=0; j<adrnodelist.getLength(); j++){
-                            Node nodeadr = adrnodelist.item(j);
-                            NamedNodeMap mapadr = nodeadr.getAttributes();
-                            String adridstring = mapadr.getNamedItem("adressid").getNodeValue();                       
-                            if(adridstring.matches("[\\d]+")){
-                                int adrid = Integer.parseInt(adridstring);
-                                Adresses adress = adrservice.findAdressById(adrid);
-                                if(adress == null){
-                                    adress = new Adresses();
-                                    adress.setAdressid(adrid);
-                                    System.out.println("adrid = " + adress.getAdressid());
+                        client.setClientname(clientmap.getNamedItem("clientname").getNodeValue());
+                        client.setClienttype(clientmap.getNamedItem("clienttype").getNodeValue());
+                        long l = Long.parseLong(clientmap.getNamedItem("regdate").getNodeValue());
+                        Date date = new Date(l);
+                        client.setRegdate(date);
+                        List<Adresses> adresses = new ArrayList<>();
+                        if(clientnode.hasChildNodes()){
+                            NodeList adrnodelist = document.getElementsByTagName("adress");
+                            for(int j=0; j<adrnodelist.getLength(); j++){
+                                Node nodeadr = adrnodelist.item(j);
+                                NamedNodeMap mapadr = nodeadr.getAttributes();
+                                String adridstring = mapadr.getNamedItem("adressid").getNodeValue();                       
+                                if(adridstring.matches("[\\d]+")){
+                                    int adrid = Integer.parseInt(adridstring);
+                                    Adresses adress = adrservice.findAdressById(adrid);
+                                    if(adress == null){
+                                        adress = new Adresses();
+                                        adress.setAdressid(adrid);
+                                        System.out.println("adrid = " + adress.getAdressid());
+                                        adress.setClientid(client);
+                                        System.out.println("adress " + adress.getAdressid() + " clientid = " + adress.getClientid().getClientid());
+                                        adress.setIp(mapadr.getNamedItem("ip").getNodeValue());
+                                        adress.setLocationadress(mapadr.getNamedItem("loc").getNodeValue());
+                                        adress.setMac(mapadr.getNamedItem("mac").getNodeValue());
+                                        adress.setModel(mapadr.getNamedItem("model").getNodeValue());
+                                    }
+                                    adresses.add(adress);
                                 }
-                                adress.setClientid(client);
-                                System.out.println("adress " + adress.getAdressid() + " clientid = " + adress.getClientid().getClientid());
-                                adress.setIp(mapadr.getNamedItem("ip").getNodeValue());
-                                adress.setLocationadress(mapadr.getNamedItem("loc").getNodeValue());
-                                adress.setMac(mapadr.getNamedItem("mac").getNodeValue());
-                                adress.setModel(mapadr.getNamedItem("model").getNodeValue());
-                                adrservice.saveAdress(adress);
-                                adresses.add(adress);
                             }
-                        }
-                    }                   
-                    client.setAdressesList(adresses);
-                    service.saveClient(client);
-                    System.out.println("client " + client.getClientid() + " successfully saved");
-                    clientslist.add(client);
+                        }                   
+                        client.setAdressesSet(new HashSet<>(adresses));                        
+                    }
+                    clientslist.add(client); 
                 }       
             }
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(DOMParser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DOMParsing.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SAXException ex) {
-            Logger.getLogger(DOMParser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DOMParsing.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(DOMParser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DOMParsing.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        clientslist.forEach(c -> {
+            System.out.println(c.getClientname().toString());
+        });
+        System.out.println("readDomXml is done!");
         return clientslist;
     }
 }

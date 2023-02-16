@@ -92,7 +92,7 @@ public class DeleteAdress extends HttpServlet {
         
         Adresses adress = adressService.findAdressById(id);
         Clients client = adress.getClientid();
-        client.getAdressesList().remove(adress);
+        client.getAdressesSet().remove(adress);
         adressService.deleteAdress(adress);
         clientService.updateClient(client);
         response.sendRedirect("http://localhost:8080/J200_Lab1/viewlist");

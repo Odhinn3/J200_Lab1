@@ -2,7 +2,9 @@ package models;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -39,7 +41,7 @@ public class Clients implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
 //    @NotNull
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "clientid")
     private Integer clientid;
@@ -55,7 +57,7 @@ public class Clients implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date regdate;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "clientid", fetch = FetchType.LAZY)
-    private List<Adresses> adressesList;
+    private Set<Adresses> adressesSet = new HashSet<>();
 
     public Clients() {
     }
@@ -105,13 +107,13 @@ public class Clients implements Serializable {
         this.regdate = regdate;
     }
 
-    @XmlTransient
-    public List<Adresses> getAdressesList() {
-        return adressesList;
+//    @XmlTransient
+    public Set<Adresses> getAdressesSet() {
+        return adressesSet;
     }
 
-    public void setAdressesList(List<Adresses> adressesList) {
-        this.adressesList = adressesList;
+    public void setAdressesSet(Set<Adresses> adressesSet) {
+        this.adressesSet = adressesSet;
     }
 
     @Override

@@ -1,13 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/J2EE/EJB30/StatelessEjbClass.java to edit this template
- */
 package repositories;
 
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import models.Adresses;
+import models.Clients;
 
 /**
  *
@@ -44,5 +41,8 @@ public class AdressesServiceImpl implements AdressService {
         repo.deleteAdress(adress);
     }
 
-     
+    @Override
+    public int getMaxId() {
+        return repo.getMaxId();
+    }    
 }

@@ -3,6 +3,7 @@ package repositories;
 
 import java.util.List;
 import models.Adresses;
+import models.Clients;
 
 /**
  *
@@ -18,5 +19,7 @@ public interface AdressRepository {
     
     void updateAdress(Adresses adress);
     
-    void deleteAdress(Adresses adress);  
+    void deleteAdress(Adresses adress); 
+    
+    int getMaxId();
 }
